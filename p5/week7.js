@@ -20,7 +20,7 @@ let canGoBelowZero = false;
 
 function preload() {
   font = loadFont("assets/Oswald-Medium.ttf");
-  poem = loadStrings("assets/ozymandias.txt");
+  poem = loadStrings("assets/Ozymandias.txt");
 }
 
 function setup() {
