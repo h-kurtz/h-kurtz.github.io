@@ -8,7 +8,7 @@
 		<link rel="stylesheet" href="../assets/css/main.css" />
 		<script src="p5.js"></script>
 		<script src="p5.sound.min.js"></script>
-		<script src="week2.js"></script>
+		<script src="week4.js"></script>
 	</head>
     <body class="is-preload">
         <!-- Header -->
@@ -21,9 +21,9 @@
 				<nav id="nav">
 					<ul>
 						<li><a href="week1.html">Drawing</a></li>
-						<li><a href="week2.html" class="active">Live Video</a></li>
+						<li><a href="week2.html">Live Video</a></li>
 						<li><a href="week3.html">Patterns and Transformations</a></li>
-						<li><a href="week4.html">Sound</a></li>
+						<li><a href="week4.html"class="active">Sound</a></li>
 						<li><a href="week5.html">REMIX</a></li>
 						<li><a href="week6.html">3D and WebGL</a></li>
 						<li><a href="week7.html">Text and Poetry</a></li>
@@ -54,17 +54,21 @@
 						</section>
 						<section>
 							<div class="container">
-								<h3>Week 2: Live Video Processing</h3>
+								<h3>Week 4: Sound</h3>
 								<div id="p5-frame"></div>
 								<h4>Instructions:</h4>
-								<p>Move around in front of your webcam. Click a spot on the canvas for new settings: </br>
-								The x-axis controls the decay time of the trails, and the y-axis sets the threshold of difference. </p>
+								<p>Click to generate a new chord!</p>
+								<p>This sketch generates chords based on the harmonic series. The more a given scale degree appears in the harmonic series,
+									the higher probablity it will be chosen as a note (so the root, fifth, and third will appear more often). The next chord's
+									key is chosen from one of the previous chord's tone, so there are some interrelations in the chord progression. The
+									current key is displayed in the background. 
+								</p>
 							</div>
 						</section>
 						<div class="container">
 							<ul class="actions fit">
-								<li><a href="week1.html" class="button alt">Previous</a></li>
-								<li><a href="week3.html" class="col-6 button">Next</a></li>
+								<li><a href="week3.html" class="button alt">Previous</a></li>
+								<li><a href="week5.html" class="col-6 button">Next</a></li>
 							</ul>
 						</div>
 					</div>

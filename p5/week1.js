@@ -118,7 +118,7 @@ let week1b = new p5((s) => {
     mouDist = mouDist + s.dist(ptmouseX, ptmouseY, tmouseX, tmouseY)/mouSpeed
   
     let dista = maxDist * tmouseX/s.width
-    let size  = maxSize * tmouseY/s.height
+    let size  = (maxSize * (s.height - tmouseY))/s.height
     
   
     for(let i = ringNum-1; i >= 0; i--) {

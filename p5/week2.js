@@ -21,7 +21,7 @@ let trailAlpha = 0.1;
 
 
 function setup() {
-  var canvas = createCanvas(640, 360)
+  var canvas = createCanvas(720, 405)
   canvas.parent('p5-frame')
   pixelDensity(1);
   
@@ -31,8 +31,8 @@ function setup() {
   
   frameRate(fRate);
 
-  thresSlider = createSlider(8, 128)
-  trailSlider = createSlider(0.005, 0.5, 0.01, 0)
+  //thresSlider = createSlider(8, 128)
+  //trailSlider = createSlider(0.005, 0.5, 0.01, 0)
   
   noStroke();
   fill(0);
@@ -43,8 +43,10 @@ function setup() {
 function draw() {
   video.loadPixels();
 
-  trailAlpha = trailSlider.value()
-  threshold  = thresSlider.value()
+  if(mouseIsPressed) {
+    trailAlpha = map(mouseX, 0, width, 0.005, 0.5)
+    threshold  = map(mouseY, 0, height, 128, 8)
+  }
 
   const curFrame = video.pixels;
   
