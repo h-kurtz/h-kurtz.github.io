@@ -108,7 +108,7 @@ class GrassBlade {
 	}
 
 	display () {
-		let windSpeed = constrain((maxMouDist - abs(mouseX - (this.xPos * grassDis + (width / 2))))/maxMouDist, 0, 0.5) * -mSpeedX/1000;
+		let windSpeed = constrain((maxMouDist - abs(mouseX - (this.xPos * grassDis + (width / 2))))/maxMouDist, 0, 0.5) * mSpeedX/2000;
 
 		this.force = -gK * this.windOffset
 		this.accel = this.force / gMass;
@@ -117,7 +117,7 @@ class GrassBlade {
 
 		push(); {
 			translate(this.xPos * grassDis + this.xOffset, 0 + this.yOffset)
-			shearX(this.noiseDist * sin((this.noiseSpeed * frameCount/fr) + this.xPos)+ this.windOffset)
+			rotate(this.noiseDist * sin((this.noiseSpeed * frameCount/fr) + this.xPos)+ this.windOffset)
 			triangle(-this.w/2, 0, this.w/2, 0, 0, -this.h)
 		} pop();
 	}
