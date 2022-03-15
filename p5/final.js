@@ -49,6 +49,7 @@ let treeWidth = 64;
 let minWidth = 10;
 
 let maxTilt = 0.5;
+let breakProb = 0.15;
 
 
 function setup() {
@@ -107,20 +108,7 @@ class GrassBlade {
 	}
 
 	display () {
-		let windSpeed = constrain((maxMouDist - abs(mouseX - (this.xPos * grassDis + (width / 2))))/maxMouDist, 0, 0.5) * -mSpeedX/1000
-		/* 
-		if (abs(windSpeed) > windThresh) {
-			this.windOffset += windSpeed;
-		}
-		else if (this.windOffset > windThresh) {
-			this.windOffset -= windThresh;
-		} 
-		else if (this.windOffset < -windThresh) {
-			this.windOffset += windThresh;
-		} 
-		else {
-			this.windOffset = 0;
-		} */
+		let windSpeed = constrain((maxMouDist - abs(mouseX - (this.xPos * grassDis + (width / 2))))/maxMouDist, 0, 0.5) * -mSpeedX/100;
 
 		this.force = -gK * this.windOffset
 		this.accel = this.force / gMass;
@@ -205,7 +193,7 @@ class GrassField {
 }
 
 class TreeComp {
-	constructor(baseP1, baseP2, tilt, growthTime) {
+	constructor(baseP1, baseP2, tilt, growthTime, distance = -1) {
 		this.startTime = frameCount
 		this.growthTime = growthTime;
 		this.finishedGrowth = false;
@@ -215,17 +203,19 @@ class TreeComp {
 
 		this.tilt = tilt;
 
-		this.initGrowPoints();
+		this.initGrowPoints(distance);
 
 		this.childComp = null;
+		this.leftBreak = null;
+		this.rightBreak = null;
 	}
 
-	initGrowPoints () {
-		let dist = this.baseP1.dist(this.baseP2)
-		this.canHaveChild = dist > 10;
+	initGrowPoints (distance = -1) {
+		this.dist = this.baseP1.dist(this.baseP2)
+		this.canHaveChild = this.dist > 10;
 
-		this.topTarP1 = createVector(this.baseP1.x + ((dist/2)*(treeTaper + this.tilt)), this.baseP1.y-treeHeight)
-		this.topTarP2 = createVector(this.baseP2.x - ((dist/2)*(treeTaper - this.tilt)), this.baseP2.y-treeHeight)
+		this.topTarP1 = createVector(this.baseP1.x + ((this.dist/2)*(treeTaper + this.tilt)), this.baseP1.y-treeHeight)
+		this.topTarP2 = createVector(this.baseP2.x - ((this.dist/2)*(treeTaper - this.tilt)), this.baseP2.y-treeHeight)
 
 		this.topP1 = this.baseP1.copy();
 		this.topP2 = this.baseP2.copy();
@@ -240,7 +230,7 @@ class TreeComp {
 			if(growthRatio >= 1) {
 				this.finishedGrowth = true;
 				if(this.canHaveChild) {
-					this.childComp = new TreeComp(this.topP1, this.topP2, this.tilt * random(0.5, 2), this.growthTime);
+					this.createChild();
 				}
 			}
 		}
@@ -248,10 +238,30 @@ class TreeComp {
 		push(); {
 			stroke(96 + blackLevel, 32 + blackLevel, 96 + blackLevel);
 			this.show();
-		} pop();
+		
 
-		if (this.childComp != null) {
-			this.childComp.display();
+			if (this.childComp != null) {
+				this.childComp.display();
+			}
+			
+			if(this.leftBreak != null) {
+				this.leftBreak.display();
+			}
+
+			if(this.rightBreak != null) {
+				this.rightBreak.display();
+			}  
+		} pop();
+	}
+	createChild() {
+		//console.log("creating child")
+		this.childComp = new TreeComp(this.topP1, this.topP2, this.tilt * random(0.5, 2), this.growthTime)
+		
+		if(random() < breakProb) {
+			this.rightBreak = new TreeBreak(this.baseP2, this.topP2, abs(this.tilt * random(1.5, 3))+ 0.5, this.growthTime, this.dist)
+		}
+		if(random() < breakProb) {
+			this.leftBreak = new TreeBreak(this.baseP1, this.topP1, -abs(this.tilt * random(1.5, 3)) - 0.5, this.growthTime, this.dist)
 		}
 	}
 
@@ -271,12 +281,34 @@ class TreeComp {
 
 class TreeBreak extends TreeComp {
 	constructor(baseP1, baseP2, tilt, growthTime, dist) {
-
-		this.dist = dist;
-
-		super(baseP1, baseP2, tilt, growthTime)
+		super(baseP1, baseP2, tilt, growthTime, dist)
 	}
-	initGrowPoints() {
-		this.topTar
+	initGrowPoints(distance) {
+		let distOffset = distance - (distance * treeTaper*2);
+		if(this.tilt < 0) {
+			distOffset = -distOffset
+		}
+		this.canHaveChild = true;
+
+		this.topTar = createVector(this.baseP2.x + distOffset, this.baseP2.y)
+
+		this.top = this.baseP2.copy();
+	}
+	show() {
+		triangle(this.baseP1.x, this.baseP1.y,
+				this.baseP2.x, this.baseP2.y,
+				this.top.x, this.top.y)
+	}
+
+	grow(growthRatio) {
+		p5.Vector.lerp(this.baseP2, this.topTar, growthRatio, this.top)
+	}
+	createChild() {
+		//console.log("create child from break")
+		if(this.tilt > 0) {
+			this.childComp = new TreeComp(this.baseP2, this.top, this.tilt * random(0.5, 2), this.growthTime)
+		} else {
+			this.childComp = new TreeComp(this.top, this.baseP2, this.tilt * random(0.5, 2), this.growthTime)
+		}
 	}
 }
