@@ -15,6 +15,11 @@ let heiOff = 8;
 let noiOff = 0.5;
 let noiDis = 0.25;
 
+// Grass spring settings
+let gMass = 100;
+let gK = 0.25;
+let gDamp = 0.98;
+
 // Grass field settings
 let overlap = 0.35;
 let grassDis;
@@ -35,14 +40,22 @@ let maxMouSpeed = 48;
 
 let windThresh = 0.025;
 
+// Tree variables
+let treeGrowthTime = 2 * fr
+let treeHeight = 64
+
+let treeTaper = 0.25;
+let treeWidth = 64;
+let minWidth = 10;
+
+let maxTilt = 0.5;
+
 
 function setup() {
 	let canvas = createCanvas(640, 480);
 	canvas.parent("p5-frame");
 
 	frameRate(fr);
-
-	tf = new Transformer();
 
 	strokeWeight(strW);
 	stroke(64 + blackLevel, 32 + blackLevel, 192 + blackLevel);
@@ -87,11 +100,15 @@ class GrassBlade {
 		this.noiseDist = random([-1, 1]) * noiDis/(PI*2);
 
 		this.windOffset = 0;
+
+		this.vel = 0.0;
+		this.accel = 0;
+		this.force = 0;
 	}
 
 	display () {
-		let windSpeed = constrain((maxMouDist - abs(mouseX - (this.xPos * grassDis + (width / 2))))/maxMouDist, 0, 1) * -mSpeedX/100
-		 
+		let windSpeed = constrain((maxMouDist - abs(mouseX - (this.xPos * grassDis + (width / 2))))/maxMouDist, 0, 0.5) * -mSpeedX/1000
+		/* 
 		if (abs(windSpeed) > windThresh) {
 			this.windOffset += windSpeed;
 		}
@@ -103,13 +120,18 @@ class GrassBlade {
 		} 
 		else {
 			this.windOffset = 0;
-		}
+		} */
 
-		tf.push(); {
-			tf.translate(this.xPos * grassDis + this.xOffset, 0 + this.yOffset)
-			shearX(this.noiseDist * sin((this.noiseSpeed * frameCount/fr) + this.xPos) + this.windOffset)
+		this.force = -gK * this.windOffset
+		this.accel = this.force / gMass;
+		this.vel = gDamp * (this.vel + this.accel + windSpeed);
+		this.windOffset = this.windOffset + this.vel;
+
+		push(); {
+			translate(this.xPos * grassDis + this.xOffset, 0 + this.yOffset)
+			shearX(this.noiseDist * sin((this.noiseSpeed * frameCount/fr) + this.xPos)+ this.windOffset)
 			triangle(-this.w/2, 0, this.w/2, 0, 0, -this.h)
-		} tf.pop();
+		} pop();
 	}
 }
 
@@ -146,25 +168,115 @@ class GrassLayer {
 class GrassField {
 	constructor () {
 		this.grassLayers = []
+		this.trees = []
 
 		for(let i = 0; i < maxLayerNum; i++) {
 			let grassNum = floor((width/pow(layerScale, i)) / (grassDis)) + 2;
 			this.grassLayers.push(new GrassLayer(grassNum, i));
+
+			let treeX = random(-width/2, width/2)
+			this.trees.push(new TreeComp(createVector(treeX - treeWidth/2, 0), 
+										 createVector(treeX + treeWidth/2, 0),
+										 random(-maxTilt, maxTilt),
+										 treeGrowthTime * random(0.5, 2)))
 		}
+
+		 
 	}
 
 	display() {
-		tf.translate(width/2, height + grassH/3);
+		translate(width/2, height + grassH/3);
+
 		for(let i = this.grassLayers.length - 1; i >= 0; i--) {
-			tf.push(); {
+			push(); {
 				let scl = pow(layerScale, i)
-				tf.scale(scl)
+				scale(scl)
 				strokeWeight(strW / scl)
 
-				tf.translate(0, -grassH * 0.7 * i);
+				translate(0, -grassH * 0.7 * i);
 				
+				this.trees[i].display();
 				this.grassLayers[i].display();
-			} tf.pop();
+			} pop();
 		}
+
+		
+	}
+}
+
+class TreeComp {
+	constructor(baseP1, baseP2, tilt, growthTime) {
+		this.startTime = frameCount
+		this.growthTime = growthTime;
+		this.finishedGrowth = false;
+
+		this.baseP1 = baseP1.copy();
+		this.baseP2 = baseP2.copy();
+
+		this.tilt = tilt;
+
+		this.initGrowPoints();
+
+		this.childComp = null;
+	}
+
+	initGrowPoints () {
+		let dist = this.baseP1.dist(this.baseP2)
+		this.canHaveChild = dist > 10;
+
+		this.topTarP1 = createVector(this.baseP1.x + ((dist/2)*(treeTaper + this.tilt)), this.baseP1.y-treeHeight)
+		this.topTarP2 = createVector(this.baseP2.x - ((dist/2)*(treeTaper - this.tilt)), this.baseP2.y-treeHeight)
+
+		this.topP1 = this.baseP1.copy();
+		this.topP2 = this.baseP2.copy();
+	}
+
+	display() {
+		if(!this.finishedGrowth) {
+			let growthRatio = (frameCount - this.startTime) / this.growthTime;
+			
+			this.grow(growthRatio);
+
+			if(growthRatio >= 1) {
+				this.finishedGrowth = true;
+				if(this.canHaveChild) {
+					this.childComp = new TreeComp(this.topP1, this.topP2, this.tilt * random(0.5, 2), this.growthTime);
+				}
+			}
+		}
+
+		push(); {
+			stroke(96 + blackLevel, 32 + blackLevel, 96 + blackLevel);
+			this.show();
+		} pop();
+
+		if (this.childComp != null) {
+			this.childComp.display();
+		}
+	}
+
+	show() {
+		quad(this.baseP1.x, this.baseP1.y,
+
+			this.topP1.x,  this.topP1.y,
+			this.topP2.x,  this.topP2.y,
+			this.baseP2.x, this.baseP2.y)
+	}
+
+	grow(growthRatio) {
+		p5.Vector.lerp(this.baseP1, this.topTarP1, growthRatio, this.topP1)
+		p5.Vector.lerp(this.baseP2, this.topTarP2, growthRatio, this.topP2)
+	}
+}
+
+class TreeBreak extends TreeComp {
+	constructor(baseP1, baseP2, tilt, growthTime, dist) {
+
+		this.dist = dist;
+
+		super(baseP1, baseP2, tilt, growthTime)
+	}
+	initGrowPoints() {
+		this.topTar
 	}
 }
