@@ -108,7 +108,7 @@ class GrassBlade {
 	}
 
 	display () {
-		let windSpeed = constrain((maxMouDist - abs(mouseX - (this.xPos * grassDis + (width / 2))))/maxMouDist, 0, 0.5) * -mSpeedX/100;
+		let windSpeed = constrain((maxMouDist - abs(mouseX - (this.xPos * grassDis + (width / 2))))/maxMouDist, 0, 0.5) * -mSpeedX/1000;
 
 		this.force = -gK * this.windOffset
 		this.accel = this.force / gMass;
