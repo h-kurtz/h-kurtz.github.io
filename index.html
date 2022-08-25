@@ -94,11 +94,11 @@
 												<header>
 													<h3><a href="https://store.steampowered.com/app/1568540/Smithworks/">Smithworks</a></h3>
 													<p>July 2021-June 2022<br \>
-													Composition, Sound Design, and Audio Engineering.</p>
+													Composition, Sound Design, <br \>and Audio Engineering.</p>
 												</header>
 											</div>
 											<p>
-												Smithworks is a cooperative crafting game where players attempt to fulfill the ridiculous weapon 
+												<i>Smithworks</i> is a cooperative crafting game where players attempt to fulfill the ridiculous weapon 
 												orders of their impatient customers—think: first-person Overcooked as medieval blacksmiths. As 
 												our senior capstone project for the games program at UCSC, I worked alongside a team of 8 talented 
 												artists and programmers as the sole sound designer, audio engineer, and composer. 
@@ -106,17 +106,100 @@
 											<div class="videoWrapper">
 												<iframe width="560" height="315" src="https://www.youtube.com/embed/E3nhMmUAZYE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 											</div>
+											<h4><br \>Musical Direction:</h4>
 											<p>
-												Given the loose fantasy setting, I couldn’t rely on the dark electronic tones I am comfortable with, 
-												and instead was challenged to focus on bright, catchy melodies and acoustic instrumentation. This involved giving 
+												Given the loose fantasy setting, I couldn’t rely on the dark electronic tones I am comfortable composing with, 
+												and instead was challenged to focus on catchy melodies and acoustic instrumentation. This involved giving 
 												each of three different blacksmith-shops their own unique sonic identity: the Village map has flute, 
-												lute, and fiddle playing a quaint waltz. The Capital City’s blacksmith shop, with its industrialized 
+												harp, and fiddle playing a quaint waltz. The Capital City’s blacksmith shop, with its industrialized 
 												waterwheels, is scored by bright, heroic brass riffs over timpani and snare, which gives way into 
-												a jazzy double-time swing section over walking bass. The last level, the Magic Academy, has 
+												a jazzy double-time swing section with walking bass. The last level, the Magic Academy, has 
 												glockenspiel and marimba playing mysterious chromatic lines accompanied by the gravitas of a soaring
 												string ensemble. You can listen to the 'soundtrack versions’ of these tracks here:
 											</p>
 											<iframe style="border: 0; width: 100%; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=4287894114/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/transparent=true/" seamless><a href="https://harrisonkurtz.bandcamp.com/album/smithworks-original-soundtrack">Smithworks - Original Soundtrack by Harrison Kurtz</a></iframe>
+											<h4><br \>Adaptive Music Techniques:</h4>
+											<p>
+												Because I had worked so heavily on intricate sound design at the expense of a proper score for <i>Invicta Vitae</i>, 
+												I used Smithworks to fully explore and practice adaptive music techniques within the industry standard audio middleware, 
+												Wwise. Each level’s dynamic music track exhibits vertical layering of instrumentation, horizontal 
+												transitions to different sections, and tempo synced stingers. 
+											</p>
+											<p>
+												Each music track begins on the main A section, after players have 'opened the shop.' This is a roughly 2 
+												minute looping piece, which either plays through linearly (Village theme) or randomly selects from sub-sections 
+												(City theme). At the start of each level, you'll hear a stripped-back version of the A section; in the case 
+												of the Village theme, some plucked chords on the harp and a simple pizzicato bassline. When the players 
+												complete one set of orders (at about the one third mark) melodic elements are layered overtop, like the 
+												fiddle and flute melodies in the village theme or the bass clarinet riffs in the city theme. To do this 
+												successfully, each of the isolated instrument layers had to be composed and mixed to work independently 
+												of accompaniment. 
+											</p>
+											<p>
+												In addition to the 'overall progression’-based melodic layering, other percussion or supporting harmonic 
+												layers are faded in or out based on the moment-to-moment intensity of gameplay. I worked with the game 
+												designer to program algorithms that would calculate intensity values, based on the time limits of all active 
+												orders, which I could link to Wwise RTPCs in order to modulate the volumes of tracks. Thus, the percussion 
+												layers ramp up in volume as players approach an individual time limits of customers’ orders and then drop 
+												out after players have completed them.
+											</p>
+											<p>
+												Once players have reached the final batch of orders in a level, the music transitions to a climactic B 
+												section, involving both a key change (ex: to the relative minor in the Village theme) and rhythmic 
+												modulation (ex: a dotted eighth note in the A section of the City theme becomes a quarter note in the 
+												B section’s triplet-swing feel). To accomplish these distinctive shifts, a short transition segment is played 
+												to smoothly or dramatically bridge between the A section and the B section. This was an incredibly exciting 
+												feature of using Wwise: the ability to flag optimal transition points in on a segment which easily synced up 
+												to the beat. But, I found that even when a transition might have seemed jarring out of context, the closer I 
+												could get it to syncing up with in-game events, the more natural it felt during gameplay. 
+											</p>
+											<div class="row">
+												<div class="col-6 col-12-xsmall">
+													<h5>Victory tag from the City level.</h5> 
+													<audio controls>
+														<source src="audio/cityVictoryTag.mp3" type="audio/mp3">
+														Your browser does not support the audio element.
+													</audio>
+												</div>
+												<div class="col-6 col-12-xsmall">
+													<h5>Loss tag from the Academy level.</h5> 
+													<audio controls>
+														<source src="audio/academyLossTag.mp3" type="audio/mp3">
+														Your browser does not support the audio element.
+													</audio>
+												</div>
+											</div>
+											<p>
+												There are also victory and loss music segments, which are transitioned to at game-over states, giving a definitive end to the 
+												looping music. I tried to have each of the victory tags resolve back into the original key and rhythmic feel 
+												(on picardy thirds for the City and Academy levels), while the loss tags ended on dissonant or ambiguous 
+												chords. An 'arcade-y’ game like this is not the place for musical subtlety…
+											</p>
+											<div class="row">
+												<div class="col-6 col-12-xsmall">
+													<h5>"Order complete" stinger from Village.</h5> 
+													<audio controls>
+														<source src="audio/villageStinger.mp3" type="audio/mp3">
+														Your browser does not support the audio element.
+													</audio>
+												</div>
+												<div class="col-6 col-12-xsmall">
+													<h5>Same stinger, but from the Academy.</h5> 
+													<audio controls>
+														<source src="audio/academyStinger.mp3" type="audio/mp3">
+														Your browser does not support the audio element.
+													</audio>
+												</div>
+											</div>
+											<p>
+												Finally, short musical stingers play upon the completion, partial completion, or failure of a customer’s 
+												order. While the stingers have unique instrumentation for each map (as well as needing to fit the key and 
+												tempo of each track), the short motifs that play are the same, establishing a musical language that 
+												players can intuitively learn. This was another area where it took some tuning in Wwise in order to get 
+												the stingers to play as close as possible to the in-game moment, while still falling on a musical beat 
+												that made sense. I also learned how to track volume levels in Wwise in order to duck the volume of the 
+												main music track, so stingers and melodic lines wouldn’t clash as much. 
+											</p>
 											
 											<ul class="actions fit">
 												<li><a href="https://store.steampowered.com/app/1568540/Smithworks/" class="button primary fit">Steam Store Page</a></li>
@@ -276,7 +359,7 @@
 								</div>
 							</section>
 
-						<!-- Five -->
+						<!-- COMMENT THIS OUT BEFORE PUSHING -->
 						<!--
 							<section id="five">
 								<div class="container">
